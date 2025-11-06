@@ -1,45 +1,53 @@
-
- //Represents a course and its basic info.
- // Includes name, code, points, and prereqs.
- package advisor.model;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package advisor.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-public class Course {
-    private String code;
+//rpresnts course with+code, name, points, and prequistes
+//used for displaying and recommending courses
+public class Course 
+{
+     private String code;
     private String name;
-    private int points;
+     private int points;
     private List<String> prerequisites;
 
-    // used when loading from DB
-    public Course(String code, String name, int points, List<String> prereq) {
+    //loading from DB with prereq list
+    public Course(String code, String name, int points, List<String> prereq) 
+    {
         this.code = code;
         this.name = name;
         this.points = points;
         this.prerequisites = prereq == null ? new ArrayList<>() : new ArrayList<>(prereq);
     }
 
-    // fallback constructor (used if prereqs are in a text form)
-    public Course(String code, String name, int points, String prereqString) {
+    
+    public Course(String code, String name, int points, String prereqString) 
+    {
         this.code = code;
         this.name = name;
         this.points = points;
-        if (prereqString == null || prereqString.isBlank()) {
+        if (prereqString == null || prereqString.isBlank()) 
+        {
             this.prerequisites = new ArrayList<>();
-        } else {
+        } else 
+        {
             this.prerequisites = Arrays.asList(prereqString.split(","));
         }
     }
-
+       //getters for course data
     public String getCode() { return code; }
-    public String getName() { return name; }
+     public String getName() { return name; }
     public int getPoints() { return points; }
-    public List<String> getPrerequisites() { return prerequisites; }
+     public List<String> getPrerequisites() { return prerequisites; }
 
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return code + " - " + name + " (" + points + " pts)";
     }
 }

@@ -1,90 +1,81 @@
 /*
- * Handles saving and loading student data (original working version).
- * Uses String IDs — this matches your GUI and Derby database.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package advisor.repo;
 
+import advisor.model.DegreePlan;
 import advisor.model.Student;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class StudentRepository {
+//handles all student database actions
+//insert/update/find/list student records
+public class StudentRepository 
+{
 
     private final Connection conn;
 
-    public StudentRepository(Connection conn) throws SQLException {
+    public StudentRepository(Connection conn) 
+    {
         this.conn = conn;
-        try {
-            this.conn.setAutoCommit(true);
-        } catch (SQLException ignore) {
-        }
     }
 
-    public void upsert(Student s) {
-        final String checkSql   = "SELECT COUNT(*) FROM Students WHERE id = ?";
-        final String insertSql  = "INSERT INTO Students (id, name, gpa, goal, completed) VALUES (?, ?, ?, ?, ?)";
-        final String updateSql  = "UPDATE Students SET name = ?, gpa = ?, goal = ?, completed = ? WHERE id = ?";
-
-        String completedStr = String.join(";", s.getCompleted());
-
-        try (PreparedStatement check = conn.prepareStatement(checkSql)) {
+    //adds or updates a student record
+    public void upsert(Student s) 
+    {
+        String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
+        String sqlInsert = "INSERT INTO Students (id, name, gpa, goal) VALUES (?, ?, ?, ?)";
+        String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=? WHERE id=?";
+        try (PreparedStatement check = conn.prepareStatement(sqlCheck)) 
+        {
             check.setString(1, s.getId());
-            try (ResultSet rs = check.executeQuery()) {
+            try (ResultSet rs = check.executeQuery()) 
+            {
                 rs.next();
                 boolean exists = rs.getInt(1) > 0;
-
-                if (exists) {
-                    try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                if (exists) 
+                {
+                    //update existing student
+                    try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) 
+                    {
                         ps.setString(1, s.getName());
                         ps.setDouble(2, s.getGpa());
                         ps.setString(3, s.getGoal());
-                        ps.setString(4, completedStr);
-                        ps.setString(5, s.getId());
+                        ps.setString(4, s.getId());
                         ps.executeUpdate();
                     }
-                } else {
-                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                } else 
+                {
+                    //insert new student
+                    try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) 
+                    {
                         ps.setString(1, s.getId());
                         ps.setString(2, s.getName());
                         ps.setDouble(3, s.getGpa());
                         ps.setString(4, s.getGoal());
-                        ps.setString(5, completedStr);
                         ps.executeUpdate();
                     }
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Save student error: " + e.getMessage());
         }
     }
 
+    //returns a list of all students
     public List<Student> findAll() {
         List<Student> list = new ArrayList<>();
-        final String sql = "SELECT id, name, gpa, goal, completed FROM Students";
-
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                Student s = new Student(
+        String sql = "SELECT * FROM Students";
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) 
+        {
+            while (rs.next()) 
+            {
+                list.add(new Student(
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getDouble("gpa"),
-                        rs.getString("goal")
-                );
-
-                String completedStr = rs.getString("completed");
-                if (completedStr != null && !completedStr.isBlank()) {
-                    Arrays.stream(completedStr.split(";"))
-                            .map(String::trim)
-                            .filter(t -> !t.isEmpty())
-                            .forEach(s::addCompleted);
-                }
-
-                list.add(s);
+                        rs.getString("goal")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,33 +83,33 @@ public class StudentRepository {
         return list;
     }
 
-    public Optional<Student> findById(String id) {
-        final String sql = "SELECT id, name, gpa, goal, completed FROM Students WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    //finds one student by their ID
+    public Optional<Student> findById(String id) 
+    {
+        String sql = "SELECT * FROM Students WHERE id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) 
+        {
             ps.setString(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Student s = new Student(
+            try (ResultSet rs = ps.executeQuery()) 
+            {
+                if (rs.next()) 
+                {
+                    return Optional.of(new Student(
                             rs.getString("id"),
                             rs.getString("name"),
                             rs.getDouble("gpa"),
-                            rs.getString("goal")
-                    );
-
-                    String completedStr = rs.getString("completed");
-                    if (completedStr != null && !completedStr.isBlank()) {
-                        Arrays.stream(completedStr.split(";"))
-                                .map(String::trim)
-                                .filter(t -> !t.isEmpty())
-                                .forEach(s::addCompleted);
-                    }
-
-                    return Optional.of(s);
+                            rs.getString("goal")));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException e) 
+        {
             e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+    //placeholder for saving degree plans later
+    public void savePlan(String id, DegreePlan plan) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

@@ -4,19 +4,21 @@
  */
 package advisor.gui;
 
+import advisor.repo.CourseRepository;
+import advisor.repo.StudentRepository;
 import javax.swing.*;
 import java.awt.*;
-
-public class AdvisorFrame extends JFrame {
-
+//main frame 4 app
+//shows all main panels+switchng between them
+public class AdvisorFrame extends JFrame 
+{
     private final AppController controller;
     private final CardLayout layout;
     private final JPanel cards;
 
-    // Main window of the app that holds all GUI panels
-    public AdvisorFrame(AppController controller) {
+    public AdvisorFrame(AppController controller) 
+    {
         this.controller = controller;
-
         setTitle("Virtual Academic Advisor");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
@@ -26,13 +28,12 @@ public class AdvisorFrame extends JFrame {
         cards = new JPanel(layout);
         getContentPane().setLayout(new BorderLayout());
 
-        // Add panels for different sections
         DashboardPanel dashboard = new DashboardPanel();
         StudentsPanel students = new StudentsPanel(controller, controller.getStudentRepo());
         CoursesPanel courses = new CoursesPanel(controller.getCourseRepo());
-        AdvicePanel advice = new AdvicePanel(controller.getAdvisor(), controller.getStudentRepo());
-
-        // Add them to the card layout
+        AdvicePanel advice = new AdvicePanel(controller, controller.getStudentRepo(), controller.getCourseRepo());
+        
+         // add each panel
         cards.add(dashboard, "DASH");
         cards.add(students, "STUDENTS");
         cards.add(courses, "COURSES");
@@ -41,12 +42,11 @@ public class AdvisorFrame extends JFrame {
         add(cards, BorderLayout.CENTER);
         add(new NavPanel(this), BorderLayout.SOUTH);
 
-        // Start at dashboard view
         layout.show(cards, "DASH");
     }
 
-    // Switch between panels
-    public void showCard(String name) {
-        layout.show(cards, name);
+    public void showCard(String name) 
+    {
+        layout.show(cards, name); //switch between panels
     }
 }

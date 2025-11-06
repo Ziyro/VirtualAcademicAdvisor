@@ -8,37 +8,30 @@ import advisor.repo.CourseRepository;
 import advisor.repo.StudentRepository;
 import advisor.service.AdvisorService;
 
-public class AppController {
-
+//main controller,connects everything together
+//references to repos, services,+main frame
+public class AppController 
+{
     private final AdvisorService advisor;
     private final CourseRepository courseRepo;
     private final StudentRepository studentRepo;
     private final AdvisorFrame frame;
 
-    // Main controller that connects all parts of the GUI together
-    public AppController(AdvisorService advisor, CourseRepository courseRepo, StudentRepository studentRepo) {
+    public AppController(AdvisorService advisor, CourseRepository courseRepo, StudentRepository studentRepo) 
+    {
         this.advisor = advisor;
         this.courseRepo = courseRepo;
         this.studentRepo = studentRepo;
-
-        // Create and link the main frame
-        this.frame = new AdvisorFrame(this);
+        this.frame = new AdvisorFrame(this); // main window
     }
 
-    // Getters used by the GUI panels
-    public AdvisorFrame getFrame() {
-        return frame;
+    //getters so other classes can access
+    public AdvisorFrame getFrame() { return frame; 
     }
-
-    public AdvisorService getAdvisor() {
-        return advisor;
+    public AdvisorService getAdvisorService() { return advisor; 
     }
-
-    public CourseRepository getCourseRepo() {
-        return courseRepo;
+    public CourseRepository getCourseRepo() { return courseRepo; 
     }
-
-    public StudentRepository getStudentRepo() {
-        return studentRepo;
+    public StudentRepository getStudentRepo() { return studentRepo; 
     }
 }

@@ -1,35 +1,39 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
 package advisor.gui;
 
 import advisor.repo.*;
 import advisor.service.*;
 import javax.swing.*;
 
+// main entry pointof app
+//sets everything up and launches main window
 public class GuiMain {
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                // Initialize the database (creates tables if needed)
+    public static void main(String[] args) 
+    {
+        SwingUtilities.invokeLater(() -> 
+        { 
+            try 
+            {
+                //connect to database first
                 Database.initialize();
-
-                // Get the existing Derby connection from Database.java
                 var conn = Database.getConnection();
 
-                // Set up repositories and advisor logic
+                //setup repos and advisor service
                 CourseRepository courseRepo = new CourseRepository(conn);
                 StudentRepository studentRepo = new StudentRepository(conn);
                 AdvisorService advisor = new RuleBasedAdvisor(courseRepo);
 
-                // Pass everything into the main controller
+                //make the controller +show  window
                 AppController controller = new AppController(advisor, courseRepo, studentRepo);
-
-                // Launch the main GUI window
                 controller.getFrame().setVisible(true);
-
-            } catch (Exception e) {
+            } catch (Exception e) 
+            {
+                //  incase something goes wrong
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null,
-                        "Error starting application: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "Error starting application: " + e.getMessage());
             }
         });
     }
