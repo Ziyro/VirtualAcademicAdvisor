@@ -1,0 +1,20 @@
+Mon Nov 03 23:42:26 NZDT 2025 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Mon Nov 03 23:42:26 NZDT 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-019a-494f-9e4f-ffffea69ed83 
+on database directory C:\Users\SKqwe\Downloads\group37_Project1\group37_Project1\VirtualAcademicAdvisor1\library\students with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Loaded from file:/C:/Users/SKqwe/Downloads/db-derby-10.14.2.0-lib/db-derby-10.14.2.0-lib/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.7+8-LTS-245
+user.dir=C:\Users\SKqwe\Downloads\db-derby-10.14.2.0-lib\db-derby-10.14.2.0-lib
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=C:\Users\SKqwe\Downloads\group37_Project1\group37_Project1\VirtualAcademicAdvisor1\library
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Nov 04 01:07:49 NZDT 2025: Shutting down Derby engine
+----------------------------------------------------------------
+Tue Nov 04 01:07:49 NZDT 2025:
+Shutting down instance a816c00e-019a-494f-9e4f-ffffea69ed83 on database directory C:\Users\SKqwe\Downloads\group37_Project1\group37_Project1\VirtualAcademicAdvisor1\library\students with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+----------------------------------------------------------------

@@ -1,0 +1,20 @@
+# === TEMPORARY IGNORE LIST FOR COMMIT 1 ===
+# These files will be added back in later commits
+
+advisor/gui/AdvicePanel.java
+advisor/gui/CoursesPanel.java
+advisor/gui/StudentsPanel.java
+advisor/gui/DashboardPanel.java
+advisor/gui/NavPanel.java
+advisor/gui/StudentFormDialog.java
+advisor/gui/UpdateCompletedDialog.java
+advisor/gui/GuiValidator.java
+
+advisor/repo/Database.java
+
+advisor/model/DegreePlan.java
+advisor/model/Recommendation.java
+
+advisor/util/ConsoleIO.java
+advisor/util/Validation.java
+

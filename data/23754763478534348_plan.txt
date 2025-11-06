@@ -1,0 +1,7 @@
+Student: 23754763478534348
+Total points: 60
+Courses:
+ - COMP501
+ - ENGR501
+ - GENED101
+ - GENED102

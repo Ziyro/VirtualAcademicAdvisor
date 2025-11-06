@@ -1,0 +1,7 @@
+Student: 22172802
+Total points: 60
+Courses:
+ - ENGR501
+ - GENED102
+ - COMP502
+ - COMP503
