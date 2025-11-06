@@ -1,36 +1,40 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
 package advisor;
 
-import advisor.gui.AdvisorFrame;
 import advisor.gui.AppController;
 import advisor.repo.*;
 import advisor.service.*;
-import java.sql.Connection;
+import javax.swing.*;
 
 public class App {
+
     public static void main(String[] args) {
-        try {
-            // Initialize database
-            Database.initialize();
-            Connection conn = Database.getConnection();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Setup database connection and initialize tables if needed
+                Database.initialize();
+                var conn = Database.getConnection();
 
-            // Repositories
-            CourseRepository courseRepo = new CourseRepository(conn);
-            StudentRepository studentRepo = new StudentRepository(conn);
+                // Create repositories for courses and students
+                CourseRepository courseRepo = new CourseRepository(conn);
+                StudentRepository studentRepo = new StudentRepository(conn);
 
-            // Advisor Service
-            AdvisorService advisor = new RuleBasedAdvisor(courseRepo);
+                // The main advisor logic used for recommendations
+                AdvisorService advisor = new RuleBasedAdvisor(courseRepo);
 
-            // GUI Controller
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                AppController controller = new AppController();
-                AdvisorFrame frame = controller.getFrame();
-                frame.setVisible(true);
-            });
+                // Controller links everything together for the GUI
+                AppController controller = new AppController(advisor, courseRepo, studentRepo);
 
-            System.out.println("Virtual Academic Advisor started successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Startup failed: " + e.getMessage());
-        }
+                // Show main application window
+                controller.getFrame().setVisible(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "Error starting application: " + e.getMessage());
+            }
+        });
     }
 }

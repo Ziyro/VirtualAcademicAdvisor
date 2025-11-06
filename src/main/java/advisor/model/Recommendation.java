@@ -1,7 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+//Holds a course recommendation and message.
+ //Shown in both the table and console.
+
 package advisor.model;
 
 public class Recommendation {
@@ -16,10 +15,11 @@ public class Recommendation {
     public String getCode() { return code; }
     public String getMessage() { return message; }
 
-    // kept for older calls using r.message()
+    // old-style call (kept for backward compatibility)
     public String message() { return message; }
 
     @Override
-    public String toString() { return code + ": " + message; }
+    public String toString() {
+        return code + ": " + message;
+    }
 }
-

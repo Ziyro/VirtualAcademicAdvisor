@@ -1,44 +1,52 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package advisor.gui;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Main app wndow 
- *  99 dashboard and navigation bar.
- */
-public class AdvisorFrame extends JFrame 
-{
-     private final AppController controller;
+public class AdvisorFrame extends JFrame {
+
+    private final AppController controller;
     private final CardLayout layout;
     private final JPanel cards;
 
-    public AdvisorFrame(AppController controller)
-    {
+    // Main window of the app that holds all GUI panels
+    public AdvisorFrame(AppController controller) {
         this.controller = controller;
+
         setTitle("Virtual Academic Advisor");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 700);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
 
         layout = new CardLayout();
         cards = new JPanel(layout);
         getContentPane().setLayout(new BorderLayout());
 
+        // Add panels for different sections
         DashboardPanel dashboard = new DashboardPanel();
-        AdvicePanel advice = new AdvicePanel();  // Added placeholder advice screen
-        NavPanel nav = new NavPanel(this);
+        StudentsPanel students = new StudentsPanel(controller, controller.getStudentRepo());
+        CoursesPanel courses = new CoursesPanel(controller.getCourseRepo());
+        AdvicePanel advice = new AdvicePanel(controller.getAdvisor(), controller.getStudentRepo());
 
-        cards.add(dashboard, "DASHBOARD");
+        // Add them to the card layout
+        cards.add(dashboard, "DASH");
+        cards.add(students, "STUDENTS");
+        cards.add(courses, "COURSES");
         cards.add(advice, "ADVICE");
-        add(cards, BorderLayout.CENTER);
-        add(nav, BorderLayout.SOUTH);
 
-        layout.show(cards, "DASHBOARD");
+        add(cards, BorderLayout.CENTER);
+        add(new NavPanel(this), BorderLayout.SOUTH);
+
+        // Start at dashboard view
+        layout.show(cards, "DASH");
     }
 
-    public void showCard(String name) 
-    {
+    // Switch between panels
+    public void showCard(String name) {
         layout.show(cards, name);
     }
 }

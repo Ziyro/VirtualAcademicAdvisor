@@ -1,30 +1,27 @@
-package advisor.model;
+
+ //Represents a course and its basic info.
+ // Includes name, code, points, and prereqs.
+ package advisor.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Represents a course record from database.
- * I included both constructors to handle DB data and manual creation.
- */
-public class Course 
-{
+public class Course {
     private String code;
-     private String name;
-     private int points;
+    private String name;
+    private int points;
     private List<String> prerequisites;
 
-    // used when loading from the database (already split prereq list)
+    // used when loading from DB
     public Course(String code, String name, int points, List<String> prereq) {
-        
-         this.code = code;
+        this.code = code;
         this.name = name;
-         this.points = points;
+        this.points = points;
         this.prerequisites = prereq == null ? new ArrayList<>() : new ArrayList<>(prereq);
     }
 
-    // fallback for when we only have a single string of prereqs
+    // fallback constructor (used if prereqs are in a text form)
     public Course(String code, String name, int points, String prereqString) {
         this.code = code;
         this.name = name;
@@ -36,7 +33,6 @@ public class Course
         }
     }
 
-    // getters used by GUI + repository
     public String getCode() { return code; }
     public String getName() { return name; }
     public int getPoints() { return points; }

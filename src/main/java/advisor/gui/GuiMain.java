@@ -1,22 +1,35 @@
 package advisor.gui;
 
+import advisor.repo.*;
+import advisor.service.*;
 import javax.swing.*;
-//this si the main class and were we run/compile our code
-public class GuiMain 
-{
-    public static void main(String[] args) 
-    {
-        SwingUtilities.invokeLater(() ->
-        {
-            try 
-            {
-                AppController controller = new AppController();
-               controller.getFrame().setVisible(true);
+
+public class GuiMain {
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Initialize the database (creates tables if needed)
+                Database.initialize();
+
+                // Get the existing Derby connection from Database.java
+                var conn = Database.getConnection();
+
+                // Set up repositories and advisor logic
+                CourseRepository courseRepo = new CourseRepository(conn);
+                StudentRepository studentRepo = new StudentRepository(conn);
+                AdvisorService advisor = new RuleBasedAdvisor(courseRepo);
+
+                // Pass everything into the main controller
+                AppController controller = new AppController(advisor, courseRepo, studentRepo);
+
+                // Launch the main GUI window
+                controller.getFrame().setVisible(true);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null,
-                        "Error starting GUI: " + e.getMessage(),
-                        "Startup Error", JOptionPane.ERROR_MESSAGE);
+                        "Error starting application: " + e.getMessage());
             }
         });
     }
