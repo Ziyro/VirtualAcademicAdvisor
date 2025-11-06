@@ -6,6 +6,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package advisor.repo;
 
 import java.sql.*;
@@ -13,7 +17,6 @@ import java.sql.*;
 //sets up and connects to the database
 public class Database 
 {
-
     //update path if DB location differs
     private static final String DB_URL = 
           "jdbc:derby:C:/.netbeans-21/.netbeans-21/derbyANAS;create=true";
@@ -24,12 +27,12 @@ public class Database
         return DriverManager.getConnection(DB_URL);
     }
 
-    //creates tables, adds missing columns, and seeds courses 
+    //creates tables and seeds courses 
     public static void initialize() 
     {
         try (Connection conn = getConnection(); Statement st = conn.createStatement()) 
         {
-            //create Students table with completed column
+            //create Students table (with completed column)
             try 
             {
                 st.executeUpdate("""
@@ -38,45 +41,26 @@ public class Database
                         name VARCHAR(100),
                         gpa DOUBLE,
                         goal VARCHAR(200),
-                        completed VARCHAR(255)
+                        completed VARCHAR(500)
                     )
                 """);
             } 
             catch (SQLException e)
             {
-                if (!"X0Y32".equals(e.getSQLState())) throw e; //table already exists
-
-                //if table exists, make sure 'completed' column also exists
-                try 
+                //if table already exists, add completed column if missing
+                if ("X0Y32".equals(e.getSQLState())) 
                 {
-                    boolean hasCompleted = false;
-                    ResultSet rs = conn.getMetaData().getColumns(null, null, "STUDENTS", null);
-                    while (rs.next()) 
+                    try 
                     {
-                        if ("COMPLETED".equalsIgnoreCase(rs.getString("COLUMN_NAME"))) 
-                        {
-                            hasCompleted = true;
-                            break;
-                        }
-                    }
-                    rs.close();
-
-                    //add the column if missing
-                    if (!hasCompleted) 
-                    {
-                        System.out.println("Adding missing 'completed' column to Students table...");
-                        st.executeUpdate("ALTER TABLE Students ADD COLUMN completed VARCHAR(255)");
-                    }
+                        st.executeUpdate("ALTER TABLE Students ADD completed VARCHAR(500)");
+                        System.out.println("Added 'completed' column to Students table.");
+                    } catch (SQLException ignored) {}
                 } 
-                catch (SQLException inner) 
-                {
-                    System.err.println("Error checking/adding 'completed' column: " + inner.getMessage());
-                }
+                else throw e;
             }
 
             //create Courses table
-            try 
-            {
+            try {
                 st.executeUpdate("""
                     CREATE TABLE Courses (
                         code VARCHAR(10) PRIMARY KEY,
@@ -88,7 +72,7 @@ public class Database
             } 
             catch (SQLException e) 
             {
-                if (!"X0Y32".equals(e.getSQLState())) throw e; //table already exists
+                if (!"X0Y32".equals(e.getSQLState())) throw e;
             }
 
             //check if courses table is empty and seed if needed
@@ -113,7 +97,6 @@ public class Database
                     System.out.println("Courses table seeded.");
                 }
             }
-
             System.out.println("Database initialized.");
         } 
         catch (SQLException e) 

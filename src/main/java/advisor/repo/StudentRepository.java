@@ -9,11 +9,10 @@ import advisor.model.Student;
 import java.sql.*;
 import java.util.*;
 
-//handles all student database actions
+//manages all student-related DB actions
 //insert/update/find/list student records
 public class StudentRepository 
 {
-
     private final Connection conn;
 
     public StudentRepository(Connection conn) 
@@ -21,46 +20,58 @@ public class StudentRepository
         this.conn = conn;
     }
 
-    //adds or updates a student record (now includes completed courses)
+    //adds or updates a student record including completed courses
     public void upsert(Student s) 
     {
         String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
         String sqlInsert = "INSERT INTO Students (id, name, gpa, goal, completed) VALUES (?, ?, ?, ?, ?)";
         String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=?, completed=? WHERE id=?";
-        try (PreparedStatement check = conn.prepareStatement(sqlCheck)) 
+
+        try 
         {
-            check.setString(1, s.getId());
-            try (ResultSet rs = check.executeQuery()) 
+            conn.setAutoCommit(true);
+            boolean exists = false;
+
+            //check if student exists
+            try (PreparedStatement check = conn.prepareStatement(sqlCheck)) 
             {
-                rs.next();
-                boolean exists = rs.getInt(1) > 0;
-                if (exists) 
+                check.setString(1, s.getId());
+                try (ResultSet rs = check.executeQuery()) 
                 {
-                    //update existing student
-                    try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) 
-                    {
-                        ps.setString(1, s.getName());
-                        ps.setDouble(2, s.getGpa());
-                        ps.setString(3, s.getGoal());
-                        ps.setString(4, String.join(";", s.getCompleted())); //save completed
-                        ps.setString(5, s.getId());
-                        ps.executeUpdate();
-                    }
-                } 
-                else 
-                {
-                    //insert new student
-                    try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) 
-                    {
-                        ps.setString(1, s.getId());
-                        ps.setString(2, s.getName());
-                        ps.setDouble(3, s.getGpa());
-                        ps.setString(4, s.getGoal());
-                        ps.setString(5, String.join(";", s.getCompleted())); //save completed
-                        ps.executeUpdate();
-                    }
+                    if (rs.next() && rs.getInt(1) > 0) exists = true;
                 }
             }
+
+            //convert completed list to string
+            String completedString = String.join(";", s.getCompleted());
+
+            if (exists) 
+            {
+                //update existing record
+                try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) 
+                {
+                    ps.setString(1, s.getName());
+                    ps.setDouble(2, s.getGpa());
+                    ps.setString(3, s.getGoal());
+                    ps.setString(4, completedString);
+                    ps.setString(5, s.getId());
+                    ps.executeUpdate();
+                }
+            } 
+            else 
+            {
+                //insert new record
+                try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) 
+                {
+                    ps.setString(1, s.getId());
+                    ps.setString(2, s.getName());
+                    ps.setDouble(3, s.getGpa());
+                    ps.setString(4, s.getGoal());
+                    ps.setString(5, completedString);
+                    ps.executeUpdate();
+                }
+            }
+            conn.commit();
         } 
         catch (SQLException e) 
         {
@@ -68,7 +79,7 @@ public class StudentRepository
         }
     }
 
-    //returns a list of all students
+    //returns all students (including completed)
     public List<Student> findAll() 
     {
         List<Student> list = new ArrayList<>();
@@ -77,19 +88,19 @@ public class StudentRepository
         {
             while (rs.next()) 
             {
-                //create new student from db
                 Student s = new Student(
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getDouble("gpa"),
                         rs.getString("goal"));
-                
-                //load completed courses if available
-                String completed = rs.getString("completed");
-                if (completed != null && !completed.isBlank()) 
+
+                String completedStr = rs.getString("completed");
+                if (completedStr != null && !completedStr.isBlank()) 
                 {
-                    for (String c : completed.split(";")) 
+                    for (String c : completedStr.split(";")) 
+                    {
                         s.addCompleted(c.trim());
+                    }
                 }
                 list.add(s);
             }
@@ -101,7 +112,7 @@ public class StudentRepository
         return list;
     }
 
-    //finds one student by their ID
+    //finds a student by ID
     public Optional<Student> findById(String id) 
     {
         String sql = "SELECT * FROM Students WHERE id=?";
@@ -112,19 +123,19 @@ public class StudentRepository
             {
                 if (rs.next()) 
                 {
-                    //create student object
                     Student s = new Student(
                             rs.getString("id"),
                             rs.getString("name"),
                             rs.getDouble("gpa"),
                             rs.getString("goal"));
-                    
-                    //load completed courses if exist
-                    String completed = rs.getString("completed");
-                    if (completed != null && !completed.isBlank()) 
+
+                    String completedStr = rs.getString("completed");
+                    if (completedStr != null && !completedStr.isBlank()) 
                     {
-                        for (String c : completed.split(";")) 
+                        for (String c : completedStr.split(";")) 
+                        {
                             s.addCompleted(c.trim());
+                        }
                     }
                     return Optional.of(s);
                 }
@@ -137,10 +148,9 @@ public class StudentRepository
         return Optional.empty();
     }
 
-    //placeholder for saving degree plans later
+    //not implemented yet (future use)
     public void savePlan(String id, DegreePlan plan) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); 
-        // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
