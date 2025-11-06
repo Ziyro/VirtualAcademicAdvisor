@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package advisor.repo;
 
 import java.sql.*;
@@ -14,18 +18,18 @@ public class Database
     private static final String DB_URL = 
           "jdbc:derby:C:/.netbeans-21/.netbeans-21/derbyANAS;create=true";
 
-    //rturns a conectin to the db
+    //returns a connection to the db
     public static Connection getConnection() throws SQLException 
     {
         return DriverManager.getConnection(DB_URL);
     }
 
-    //creates tables and seeds courses 
+    //creates tables, adds missing columns, and seeds courses 
     public static void initialize() 
     {
         try (Connection conn = getConnection(); Statement st = conn.createStatement()) 
         {
-            //create Students table
+            //create Students table with completed column
             try 
             {
                 st.executeUpdate("""
@@ -33,16 +37,46 @@ public class Database
                         id VARCHAR(20) PRIMARY KEY,
                         name VARCHAR(100),
                         gpa DOUBLE,
-                        goal VARCHAR(200)
+                        goal VARCHAR(200),
+                        completed VARCHAR(255)
                     )
                 """);
-            } catch (SQLException e)
+            } 
+            catch (SQLException e)
             {
                 if (!"X0Y32".equals(e.getSQLState())) throw e; //table already exists
+
+                //if table exists, make sure 'completed' column also exists
+                try 
+                {
+                    boolean hasCompleted = false;
+                    ResultSet rs = conn.getMetaData().getColumns(null, null, "STUDENTS", null);
+                    while (rs.next()) 
+                    {
+                        if ("COMPLETED".equalsIgnoreCase(rs.getString("COLUMN_NAME"))) 
+                        {
+                            hasCompleted = true;
+                            break;
+                        }
+                    }
+                    rs.close();
+
+                    //add the column if missing
+                    if (!hasCompleted) 
+                    {
+                        System.out.println("Adding missing 'completed' column to Students table...");
+                        st.executeUpdate("ALTER TABLE Students ADD COLUMN completed VARCHAR(255)");
+                    }
+                } 
+                catch (SQLException inner) 
+                {
+                    System.err.println("Error checking/adding 'completed' column: " + inner.getMessage());
+                }
             }
 
             //create Courses table
-            try {
+            try 
+            {
                 st.executeUpdate("""
                     CREATE TABLE Courses (
                         code VARCHAR(10) PRIMARY KEY,
@@ -51,7 +85,8 @@ public class Database
                         prereqs VARCHAR(255)
                     )
                 """);
-            } catch (SQLException e) 
+            } 
+            catch (SQLException e) 
             {
                 if (!"X0Y32".equals(e.getSQLState())) throw e; //table already exists
             }
@@ -78,8 +113,11 @@ public class Database
                     System.out.println("Courses table seeded.");
                 }
             }
+
             System.out.println("Database initialized.");
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             System.err.println("Database init error: " + e.getMessage());
         }
     }

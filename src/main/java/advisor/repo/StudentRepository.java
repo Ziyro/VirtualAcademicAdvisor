@@ -21,12 +21,12 @@ public class StudentRepository
         this.conn = conn;
     }
 
-    //adds or updates a student record
+    //adds or updates a student record (now includes completed courses)
     public void upsert(Student s) 
     {
         String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
-        String sqlInsert = "INSERT INTO Students (id, name, gpa, goal) VALUES (?, ?, ?, ?)";
-        String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=? WHERE id=?";
+        String sqlInsert = "INSERT INTO Students (id, name, gpa, goal, completed) VALUES (?, ?, ?, ?, ?)";
+        String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=?, completed=? WHERE id=?";
         try (PreparedStatement check = conn.prepareStatement(sqlCheck)) 
         {
             check.setString(1, s.getId());
@@ -42,10 +42,12 @@ public class StudentRepository
                         ps.setString(1, s.getName());
                         ps.setDouble(2, s.getGpa());
                         ps.setString(3, s.getGoal());
-                        ps.setString(4, s.getId());
+                        ps.setString(4, String.join(";", s.getCompleted())); //save completed
+                        ps.setString(5, s.getId());
                         ps.executeUpdate();
                     }
-                } else 
+                } 
+                else 
                 {
                     //insert new student
                     try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) 
@@ -54,30 +56,46 @@ public class StudentRepository
                         ps.setString(2, s.getName());
                         ps.setDouble(3, s.getGpa());
                         ps.setString(4, s.getGoal());
+                        ps.setString(5, String.join(";", s.getCompleted())); //save completed
                         ps.executeUpdate();
                     }
                 }
             }
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             System.err.println("Save student error: " + e.getMessage());
         }
     }
 
     //returns a list of all students
-    public List<Student> findAll() {
+    public List<Student> findAll() 
+    {
         List<Student> list = new ArrayList<>();
         String sql = "SELECT * FROM Students";
         try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) 
         {
             while (rs.next()) 
             {
-                list.add(new Student(
+                //create new student from db
+                Student s = new Student(
                         rs.getString("id"),
                         rs.getString("name"),
                         rs.getDouble("gpa"),
-                        rs.getString("goal")));
+                        rs.getString("goal"));
+                
+                //load completed courses if available
+                String completed = rs.getString("completed");
+                if (completed != null && !completed.isBlank()) 
+                {
+                    for (String c : completed.split(";")) 
+                        s.addCompleted(c.trim());
+                }
+                list.add(s);
             }
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             e.printStackTrace();
         }
         return list;
@@ -94,14 +112,25 @@ public class StudentRepository
             {
                 if (rs.next()) 
                 {
-                    return Optional.of(new Student(
+                    //create student object
+                    Student s = new Student(
                             rs.getString("id"),
                             rs.getString("name"),
                             rs.getDouble("gpa"),
-                            rs.getString("goal")));
+                            rs.getString("goal"));
+                    
+                    //load completed courses if exist
+                    String completed = rs.getString("completed");
+                    if (completed != null && !completed.isBlank()) 
+                    {
+                        for (String c : completed.split(";")) 
+                            s.addCompleted(c.trim());
+                    }
+                    return Optional.of(s);
                 }
             }
-        } catch (SQLException e) 
+        } 
+        catch (SQLException e) 
         {
             e.printStackTrace();
         }
@@ -109,7 +138,9 @@ public class StudentRepository
     }
 
     //placeholder for saving degree plans later
-    public void savePlan(String id, DegreePlan plan) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void savePlan(String id, DegreePlan plan) 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); 
+        // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
