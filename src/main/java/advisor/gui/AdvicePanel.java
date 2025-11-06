@@ -1,30 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package advisor.gui;
 
-import advisor.model.Recommendation;
 import advisor.model.Student;
-import advisor.repo.CourseRepository;
-import advisor.repo.StudentRepository;
+import advisor.model.Recommendation;
+import advisor.repo.*;
+import advisor.service.*;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
 import java.util.List;
 
 public class AdvicePanel extends JPanel {
-    private final AppController controller;
-    private final StudentRepository studentRepo;
-    private final CourseRepository courseRepo;
-    private JTable table;
-    private DefaultTableModel model;
+    private final JTextArea area;
 
-    public AdvicePanel(AppController controller, StudentRepository studentRepo, CourseRepository courseRepo) {
-        this.controller = controller;
-        this.studentRepo = studentRepo;
-        this.courseRepo = courseRepo;
-
+    public AdvicePanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -32,47 +20,45 @@ public class AdvicePanel extends JPanel {
         title.setFont(new Font("Segoe UI", Font.BOLD, 24));
         add(title, BorderLayout.NORTH);
 
-        model = new DefaultTableModel(new Object[]{"Course", "Message"}, 0);
-        table = new JTable(model);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        table.setRowHeight(36);
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
-        table.getTableHeader().setPreferredSize(new Dimension(0, 45));
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        area = new JTextArea();
+        area.setEditable(false);
+        area.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        add(new JScrollPane(area), BorderLayout.CENTER);
 
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
         JButton adviseBtn = new JButton("Get Advice");
         adviseBtn.setPreferredSize(new Dimension(200, 50));
         adviseBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        adviseBtn.addActionListener(e -> showAdvice());
+
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
         bottom.add(adviseBtn);
         add(bottom, BorderLayout.SOUTH);
-
-        adviseBtn.addActionListener(e -> onAdvise());
     }
 
-    private void onAdvise() {
-        String id = JOptionPane.showInputDialog(this, "Enter Student ID (digits only):");
-        if (id == null) return;
-        id = id.trim();
-        if (!id.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "ID must be digits only.");
-            return;
-        }
-        try {
-            var maybe = studentRepo.findById(id);
-            if (maybe.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Student not found.");
-                return;
-            }
-            Student s = maybe.get();
-            List<Recommendation> recs = controller.getAdvisorService().recommendNextSemester(s);
+    private void showAdvice() 
+    {
+        try 
+        {
+           Connection conn = Database.getConnection();
+            CourseRepository courseRepo = new CourseRepository(conn);
+           StudentRepository studentRepo = new StudentRepository(conn);
+            AdvisorService advisor = new RuleBasedAdvisor(courseRepo);
 
-            model.setRowCount(0);
+            // In real GUI, user would pick student ID from list or form
+            Student s = new Student("S12345", "John Doe", 3.2, "Become Software Engineer");
+
+            List<Recommendation> recs = advisor.recommendNextSemester(s);
+
+            area.setText("");
             for (Recommendation r : recs) {
-                model.addRow(new Object[]{r.getCode(), r.getMessage()});
+                area.append(r.toString() + "\n");
             }
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error generating advice:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

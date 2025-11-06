@@ -1,8 +1,23 @@
 package advisor.gui;
 
-public class GuiMain {
-    public static void main(String[] args) {
-        System.out.println("Virtual Academic Advisor starting...");
-        // GUI and database will be added later.
+import javax.swing.*;
+
+public class GuiMain 
+{
+    public static void main(String[] args) 
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            try 
+            {
+                AppController controller = new AppController();
+               controller.getFrame().setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "Error starting GUI: " + e.getMessage(),
+                        "Startup Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 }

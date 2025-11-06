@@ -16,19 +16,21 @@ import java.util.Optional;
 
 public class Menu {
 
-    private final ConsoleIO io;
+     private final ConsoleIO io;
     private final AdvisorService advisor;
-    private final CourseRepository courseRepo;
+     private final CourseRepository courseRepo;
     private final StudentRepository studentRepo;
 
-    public Menu(ConsoleIO io, AdvisorService advisor, CourseRepository courseRepo, StudentRepository studentRepo) {
+    public Menu(ConsoleIO io, AdvisorService advisor, CourseRepository courseRepo, StudentRepository studentRepo)
+    {
         this.io = io;
-        this.advisor = advisor;
+         this.advisor = advisor;
         this.courseRepo = courseRepo;
         this.studentRepo = studentRepo;
     }
 
-    public void start() {
+    public void start()
+    {
         String choice;
         do {
             io.println("\nMain Menu:");

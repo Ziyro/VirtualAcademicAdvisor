@@ -1,24 +1,86 @@
 package advisor.repo;
 
+import advisor.model.DegreePlan;
 import advisor.model.Student;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
-/**
- * Placeholder repository for student data.
- * Database queries will be added later.
- */
 public class StudentRepository {
+    private final Connection conn;
 
-    public StudentRepository() {
-        // TODO connect to DB later
+    public StudentRepository(Connection conn) {
+        this.conn = conn;
     }
 
-    public void save(Student s) {
-        // TODO insert or update student record
+    public void upsert(Student s) {
+        String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
+        String sqlInsert = "INSERT INTO Students (id, name, gpa, goal) VALUES (?, ?, ?, ?)";
+        String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=? WHERE id=?";
+        try (PreparedStatement check = conn.prepareStatement(sqlCheck)) {
+            check.setString(1, s.getId());
+            try (ResultSet rs = check.executeQuery()) {
+                rs.next();
+                boolean exists = rs.getInt(1) > 0;
+                if (exists) {
+                    try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
+                        ps.setString(1, s.getName());
+                        ps.setDouble(2, s.getGpa());
+                        ps.setString(3, s.getGoal());
+                        ps.setString(4, s.getId());
+                        ps.executeUpdate();
+                    }
+                } else {
+                    try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
+                        ps.setString(1, s.getId());
+                        ps.setString(2, s.getName());
+                        ps.setDouble(3, s.getGpa());
+                        ps.setString(4, s.getGoal());
+                        ps.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Save student error: " + e.getMessage());
+        }
     }
 
     public List<Student> findAll() {
-        // TODO fetch all students from DB
-        return null;
+        List<Student> list = new ArrayList<>();
+        String sql = "SELECT * FROM Students";
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(new Student(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getDouble("gpa"),
+                        rs.getString("goal")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public Optional<Student> findById(String id) {
+        String sql = "SELECT * FROM Students WHERE id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Student(
+                            rs.getString("id"),
+                            rs.getString("name"),
+                            rs.getDouble("gpa"),
+                            rs.getString("goal")));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public void savePlan(String id, DegreePlan plan) {
+        // optional placeholder; not implemented in this stage
     }
 }

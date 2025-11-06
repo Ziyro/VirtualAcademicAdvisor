@@ -48,7 +48,7 @@ public class StudentFormDialog extends JDialog {
         String goal = goalField.getText().trim();
 
         try {
-            repo.upsert(new Student(id, name, gpa, goal));
+            //repo.upsert(new Student(id, name, gpa, goal));
             JOptionPane.showMessageDialog(this, "Student saved.");
             dispose();
         } catch (Exception ex) {

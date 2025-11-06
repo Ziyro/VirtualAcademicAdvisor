@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package advisor.gui;
 
 import javax.swing.*;
@@ -9,28 +5,30 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Navigation bar at the bottom of the app.
+ * Currently supports switching between Dashboard and Advice panels.
+ */
 public class NavPanel extends JPanel implements ActionListener {
     private final AdvisorFrame frame;
 
     public NavPanel(AdvisorFrame frame) {
         this.frame = frame;
-        setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
-        setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        add(make("Dashboard", "DASH"));
-        add(make("Students", "STUDENTS"));
-        add(make("Courses", "COURSES"));
-        add(make("Get Advice", "ADVICE"));
-        add(make("Exit", "EXIT"));
+        add(makeButton("Dashboard", "DASHBOARD"));
+        add(makeButton("Advice", "ADVICE"));
+        add(makeButton("Exit", "EXIT"));
     }
 
-    private JButton make(String text, String cmd) {
-        JButton b = new JButton(text);
-        b.setActionCommand(cmd);
-        b.addActionListener(this);
-        b.setPreferredSize(new Dimension(180, 50));
-        b.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        return b;
+    private JButton makeButton(String text, String cmd) {
+        JButton btn = new JButton(text);
+        btn.setActionCommand(cmd);
+        btn.addActionListener(this);
+        btn.setPreferredSize(new Dimension(160, 45));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        return btn;
     }
 
     @Override
