@@ -1,67 +1,80 @@
 package advisor.service;
 
-import advisor.model.*;
+import advisor.model.Course;
+import advisor.model.DegreePlan;
+import advisor.model.Recommendation;
+import advisor.model.Student;
 import advisor.repo.CourseRepository;
 import java.sql.SQLException;
 import java.util.*;
 
-/*
- * This is the main r logic for giving course advice.
- * I made it use the database repo instead of hardcoding anything.
+/**
+ * Generates course recommendations based on completed prerequisites.
+ * Uses the CourseRepository to fetch get data from the database.
  */
-public class RuleBasedAdvisor implements AdvisorService 
+public class RuleBasedAdvisor implements AdvisorService
 {
 
     private final CourseRepository courseRepo;
 
-    // connect the advisor to the course repository (so it can check prereqs)
-       public RuleBasedAdvisor(CourseRepository courseRepo)
+    public RuleBasedAdvisor(CourseRepository courseRepo) 
     {
-      this.courseRepo = courseRepo;
+        this.courseRepo = courseRepo;
     }
 
+    /**
+     * Recommend eligible courses for the student
+     *only allows course if prerequis hav been met
+     */
     @Override
     public List<Recommendation> recommendNextSemester(Student s) throws SQLException 
     {
         List<Recommendation> recs = new ArrayList<>();
-        List<Course> all = courseRepo.findAll();
-        List<String> done = s.getCompleted(); // list of completed courses for the student
+        List<Course> allCourses = courseRepo.findAll();
+        List<String> completed = s.getCompleted();
 
-        // go through every course and check if prerequisites are doneorfinished
-        for (Course c : all) {
-            if (done.contains(c.getCode())) continue; // skip if already completed
+        for (Course c : allCourses) {
+            if (completed.contains(c.getCode())) continue; // skip completed courses
 
-            boolean ok = true;
-            for (String pre : c.getPrerequisites()) {
-                if (!done.contains(pre.trim())) {
-                    ok = false;
+            boolean eligible = true;
+            for (String pre : c.getPrerequisites())
+            {
+                if (!pre.isBlank() && !completed.contains(pre.trim())) 
+                {
+                    eligible = false;
                     break;
                 }
             }
 
-            // if all prereqs are done, add it as a recommendation
-            if (ok) {
+            if (eligible) 
+            {
                 recs.add(new Recommendation(
                         c.getCode(),
-                        "You can take " + c.getName() + " next semester."));
+                        "You can take " + c.getName() + " next semester."
+                ));
             }
         }
 
-        // if nothing qualifies, show a message instead of an empty list
-        if (recs.isEmpty()) {
+        if (recs.isEmpty()) 
+        {
             recs.add(new Recommendation("-", "No eligible courses found."));
         }
 
         return recs;
     }
 
+    /**
+     * Build a draft degree plan from recommendations.
+     */
     @Override
-    public DegreePlan buildDraftPlan(Student s, List<Recommendation> recs) {
-        // basically builds a simple plan object from the current recommendations
-        List<String> list = new ArrayList<>();
+    public DegreePlan buildDraftPlan(Student s, List<Recommendation> recs) 
+    {
+        List<String> planCourses = new ArrayList<>();
         for (Recommendation r : recs) {
-            if (!"-".equals(r.getCode())) list.add(r.getCode());
+            if (!r.getCode().equals("-")) {
+                planCourses.add(r.getCode());
+            }
         }
-        return new DegreePlan(list);
+        return new DegreePlan(planCourses);
     }
 }

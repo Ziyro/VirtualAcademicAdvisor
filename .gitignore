@@ -1,20 +1,55 @@
-# === TEMPORARY IGNORE LIST FOR COMMIT 1 ===
-# These files will be added back in later commits
 
-advisor/gui/AdvicePanel.java
-advisor/gui/CoursesPanel.java
-advisor/gui/StudentsPanel.java
-advisor/gui/DashboardPanel.java
-advisor/gui/NavPanel.java
-advisor/gui/StudentFormDialog.java
-advisor/gui/UpdateCompletedDialog.java
-advisor/gui/GuiValidator.java
+target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
 
-advisor/repo/Database.java
+# ========================
+# NetBeans specific
+# ========================
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+.classpath
+.project
 
-advisor/model/DegreePlan.java
-advisor/model/Recommendation.java
+# ========================
+# IntelliJ / Eclipse / VSCode (safety)
+# ========================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
 
-advisor/util/ConsoleIO.java
-advisor/util/Validation.java
+# ========================
+# OS junk
+# ========================
+.DS_Store
+Thumbs.db
 
+# ========================
+# Local database / Derby
+# ========================
+derby.log
+**/derbyANAS/
+**/derbyANAS.log
+**/derbyANAS/*
+
+# ========================
+# Old console version (CUI)
+# ========================
+/src/main/java/advisor/cui/
+advisor/cui/
+
+# ========================
+# Temporary or local config
+# ========================
+*.bak
+*.tmp
+*.swp

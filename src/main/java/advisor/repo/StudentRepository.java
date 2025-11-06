@@ -6,17 +6,19 @@ import java.sql.*;
 import java.util.*;
 
 public class StudentRepository {
+
     private final Connection conn;
 
     public StudentRepository(Connection conn) {
         this.conn = conn;
     }
 
+    // insert or update student info
     public void upsert(Student s) {
-        String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
-        String sqlInsert = "INSERT INTO Students (id, name, gpa, goal) VALUES (?, ?, ?, ?)";
+         String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
+       String sqlInsert = "INSERT INTO Students (id, name, gpa, goal) VALUES (?, ?, ?, ?)";
         String sqlUpdate = "UPDATE Students SET name=?, gpa=?, goal=? WHERE id=?";
-        try (PreparedStatement check = conn.prepareStatement(sqlCheck)) {
+       try (PreparedStatement check = conn.prepareStatement(sqlCheck)) {
             check.setString(1, s.getId());
             try (ResultSet rs = check.executeQuery()) {
                 rs.next();
@@ -44,9 +46,10 @@ public class StudentRepository {
         }
     }
 
+    // returns all students in DB
     public List<Student> findAll() {
-        List<Student> list = new ArrayList<>();
-        String sql = "SELECT * FROM Students";
+          List<Student> list = new ArrayList<>();
+      String sql = "SELECT * FROM Students";
         try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(new Student(
@@ -56,11 +59,12 @@ public class StudentRepository {
                         rs.getString("goal")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+             e.printStackTrace();
         }
         return list;
     }
 
+    // helper to find by id (used in both GUI + CUI)
     public Optional<Student> findById(String id) {
         String sql = "SELECT * FROM Students WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -68,8 +72,8 @@ public class StudentRepository {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Student(
-                            rs.getString("id"),
-                            rs.getString("name"),
+                           rs.getString("id"),
+                           rs.getString("name"),
                             rs.getDouble("gpa"),
                             rs.getString("goal")));
                 }
@@ -80,7 +84,9 @@ public class StudentRepository {
         return Optional.empty();
     }
 
+    // placeholder for saving a degree plan 
     public void savePlan(String id, DegreePlan plan) {
-        // optional placeholder; not implemented in this stage
+        
+        System.out.println("savePlan() not implemented yet, skipping for now.");
     }
 }

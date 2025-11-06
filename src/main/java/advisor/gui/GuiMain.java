@@ -1,7 +1,7 @@
 package advisor.gui;
 
 import javax.swing.*;
-
+//this si the main class and were we run/compile our code
 public class GuiMain 
 {
     public static void main(String[] args) 
