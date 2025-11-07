@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 //dialog window for adding or editing a student
-//handles input validtion and saving to repo
+//handles input validation and saving to repo
 public class StudentFormDialog extends JDialog {
     private final JTextField idField = new JTextField();
     private final JTextField nameField = new JTextField();
@@ -23,20 +23,26 @@ public class StudentFormDialog extends JDialog {
         this.repo = repo;
 
         //setup dialog layout
-        setLayout(new GridLayout(5, 2, 10, 10));
-        setSize(460, 300);
-        setLocationRelativeTo(parent);
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 12));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25)); // added spacing inside dialog
 
         //form fields
-        add(new JLabel("Student ID:")); add(idField);
-        add(new JLabel("Full name:")); add(nameField);
-        add(new JLabel("GPA (0.0 - 9.0):")); add(gpaField);
-        add(new JLabel("Goal (optional):")); add(goalField);
+        formPanel.add(new JLabel("Student ID:")); formPanel.add(idField);
+        formPanel.add(new JLabel("Full name:")); formPanel.add(nameField);
+        formPanel.add(new JLabel("GPA (0.0 - 9.0):")); formPanel.add(gpaField);
+        formPanel.add(new JLabel("Goal (optional):")); formPanel.add(goalField);
 
         //buttons
         JButton save = new JButton("Save");
         JButton cancel = new JButton("Cancel");
-        add(save); add(cancel);
+        formPanel.add(save);
+        formPanel.add(cancel);
+
+        add(formPanel);
+
+        //dialog sizing and positioning
+        setSize(480, 320);
+        setLocationRelativeTo(parent);
 
         //button actions
         save.addActionListener(e -> onSave());
