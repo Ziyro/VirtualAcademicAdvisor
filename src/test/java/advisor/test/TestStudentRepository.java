@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//tests inserting, fetching, and listing students from in-memory DB
+//tests inserting,fetching,listing students from inmemory DB
 public class TestStudentRepository {
 
     //creates a fresh in-memory DB schema before each test
