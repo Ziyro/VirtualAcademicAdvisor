@@ -6,44 +6,75 @@ package advisor.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
-//bottom navbar for switching btween screens
-public class NavPanel extends JPanel implements ActionListener {
+//bottom navnbar with hover colour effect 
+public class NavPanel extends JPanel implements ActionListener 
+{
     private final AdvisorFrame frame;
 
     public NavPanel(AdvisorFrame frame) 
     {
         this.frame = frame;
-        //setup layout and spacing for nav buttons
         setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
         setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+        setBackground(new Color(245, 247, 250)); 
 
-        //add main nav buttons
-        add(make("Dashboard", "DASH"));
-        add(make("Students", "STUDENTS"));
-        add(make("Courses", "COURSES"));
-        add(make("Get Advice", "ADVICE"));
-        add(make("Exit", "EXIT"));
+        
+        add(makeButton("Dashboard", "DASH"));
+        add(makeButton("Students", "STUDENTS"));
+        add(makeButton("Courses", "COURSES"));
+        add(makeButton("Get Advice", "ADVICE"));
+        add(makeButton("Exit", "EXIT"));
     }
 
-    private JButton make(String text, String cmd)
+    //creates button with hover color change effect
+    private JButton makeButton(String text, String cmd) 
     {
-        //to create and style each button
         JButton b = new JButton(text);
         b.setActionCommand(cmd);
         b.addActionListener(this);
+
         b.setPreferredSize(new Dimension(180, 50));
         b.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        b.setFocusPainted(false);
+        b.setBackground(new Color(235, 237, 240)); //default light gray
+        b.setForeground(new Color(40, 40, 40));
+        b.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+
+        //hover color change
+        b.addMouseListener(new MouseAdapter() 
+        {
+            @Override
+            public void mouseEntered(MouseEvent e) 
+            {
+                b.setBackground(new Color(66, 135, 245)); //blue hover
+                b.setForeground(Color.WHITE);
+                b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) 
+            {
+                b.setBackground(new Color(235, 237, 240)); //reset
+                b.setForeground(new Color(40, 40, 40));
+                b.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+
         return b;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-        //handle button clicks
-        if ("EXIT".equals(e.getActionCommand())) System.exit(0);
-        else frame.showCard(e.getActionCommand());
+        if ("EXIT".equals(e.getActionCommand())) 
+        {
+            System.exit(0);
+        } 
+        else 
+        {
+            frame.showCard(e.getActionCommand());
+        }
     }
 }

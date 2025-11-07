@@ -8,7 +8,7 @@ import advisor.repo.*;
 import advisor.service.*;
 import javax.swing.*;
 
-// main entry pointof app
+//main entry pointof app
 //sets everything up and launches main window
 public class GuiMain {
     public static void main(String[] args) 

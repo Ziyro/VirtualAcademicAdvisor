@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package advisor.gui;
 
 import advisor.model.Student;
@@ -9,7 +5,7 @@ import advisor.repo.StudentRepository;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.*; //kept as is, but we fully-qualify types below
+import java.util.*;
 
 //panel shows all student records
 //add, refresh, update courses, or show completed ones
@@ -51,8 +47,10 @@ public class StudentsPanel extends JPanel
         JButton updateCoursesBtn = new JButton("Update Courses");
         JButton showCompletedBtn = new JButton("Show Completed");
 
+        //apply hover styling
         for (JButton b : new JButton[]{addBtn, refreshBtn, updateCoursesBtn, showCompletedBtn})
         {
+            styleActionButton(b);
             b.setFont(new Font("Segoe UI", Font.BOLD, 16));
             b.setPreferredSize(new Dimension(200, 50));
             buttons.add(b);
@@ -130,5 +128,33 @@ public class StudentsPanel extends JPanel
             //show message if something fails
             JOptionPane.showMessageDialog(this, "Failed to load students: " + e.getMessage());
         }
+    }
+
+    //hover effect for buttons 
+    private void styleActionButton(JButton b)
+    {
+        b.setFocusPainted(false);
+        b.setBackground(new Color(245, 247, 250)); // base tone
+        b.setForeground(new Color(40, 60, 90));
+        b.setBorder(BorderFactory.createLineBorder(new Color(210, 210, 210)));
+
+        b.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e)
+            {
+                b.setBackground(new Color(70, 130, 180)); // soft blue hover
+                b.setForeground(Color.WHITE);
+                b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e)
+            {
+                b.setBackground(new Color(245, 247, 250)); // reset
+                b.setForeground(new Color(40, 60, 90));
+                b.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
     }
 }

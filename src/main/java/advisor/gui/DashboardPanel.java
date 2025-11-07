@@ -7,22 +7,27 @@ package advisor.gui;
 import javax.swing.*;
 import java.awt.*;
 
-//welcome screen 
-//shows a message when program starts
-public class DashboardPanel extends JPanel {
-    public DashboardPanel() {
-        //border layout so text is centered
+//dash screen
+public class DashboardPanel extends JPanel 
+{
+    public DashboardPanel() 
+    {
+       
         setLayout(new BorderLayout());
+        setBackground(new Color(245, 247, 250)); //soft background tone
 
-        //main welcome text (HTML for styling)
-        JLabel label = new JLabel
-        (
-            "<html><center><h1>Welcome to the Virtual Academic Advisor</h1>" +
-            "<p>Select a feature below to begin.</p></center></html>", SwingConstants.CENTER
+      
+        JLabel label = new JLabel(
+            "<html><center>" +
+            "<h1 style='font-size:30px; color:#283C6E; border-bottom:2px solid #AAAAAA; padding-bottom:6px;'>"
+            + "Welcome to the Virtual Academic Advisor" + "</h1>" +
+            "<p style='font-size:18px; color:#555555;'>Select a feature below to begin.</p>" +
+            "</center></html>",
+            SwingConstants.CENTER
         );
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 20));
 
-        // add label to middle of screen
+        
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         add(label, BorderLayout.CENTER);
     }
 }
