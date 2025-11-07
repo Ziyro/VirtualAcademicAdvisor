@@ -8,6 +8,7 @@ import advisor.repo.CourseRepository;
 import advisor.repo.StudentRepository;
 import javax.swing.*;
 import java.awt.*;
+
 //main frame 4 app
 //shows all main panels+switchng between them
 public class AdvisorFrame extends JFrame 
@@ -20,7 +21,7 @@ public class AdvisorFrame extends JFrame
     {
         this.controller = controller;
         setTitle("Virtual Academic Advisor");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //prevent auto close, we add confirm exit
         setSize(1200, 800);
         setLocationRelativeTo(null);
 
@@ -28,12 +29,13 @@ public class AdvisorFrame extends JFrame
         cards = new JPanel(layout);
         getContentPane().setLayout(new BorderLayout());
 
+        //create each main panel
         DashboardPanel dashboard = new DashboardPanel();
         StudentsPanel students = new StudentsPanel(controller, controller.getStudentRepo());
         CoursesPanel courses = new CoursesPanel(controller.getCourseRepo());
         AdvicePanel advice = new AdvicePanel(controller, controller.getStudentRepo(), controller.getCourseRepo());
         
-         // add each panel
+        //add each panel
         cards.add(dashboard, "DASH");
         cards.add(students, "STUDENTS");
         cards.add(courses, "COURSES");
@@ -43,6 +45,26 @@ public class AdvisorFrame extends JFrame
         add(new NavPanel(this), BorderLayout.SOUTH);
 
         layout.show(cards, "DASH");
+
+        //confirm before exit (prevents accidental close)
+        addWindowListener(new java.awt.event.WindowAdapter() 
+        {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) 
+            {
+                int result = JOptionPane.showConfirmDialog(
+                    AdvisorFrame.this,
+                    "Are you sure you want to exit?",
+                    "Confirm Exit",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+                );
+                if (result == JOptionPane.YES_OPTION) 
+                {
+                    System.exit(0); //close only if user confirms
+                }
+            }
+        });
     }
 
     public void showCard(String name) 
