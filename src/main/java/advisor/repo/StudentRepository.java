@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package advisor.repo;
 
 import advisor.model.DegreePlan;
 import advisor.model.Student;
 import java.sql.*;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 //manages all student-related DB actions
 //insert/update/find/list student records
@@ -20,7 +17,7 @@ public class StudentRepository
         this.conn = conn;
     }
 
-    //adds or updates a student record including completed courses
+    //adds+updates a studnt record incuding completed courses
     public void upsert(Student s) 
     {
         String sqlCheck = "SELECT COUNT(*) FROM Students WHERE id=?";
@@ -42,7 +39,7 @@ public class StudentRepository
                 }
             }
 
-            //convert completed list to string
+            //convert cmpletd list to string
             String completedString = String.join(";", s.getCompleted());
 
             if (exists) 
@@ -60,7 +57,7 @@ public class StudentRepository
             } 
             else 
             {
-                //insert new record
+                //insert new rcord
                 try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) 
                 {
                     ps.setString(1, s.getId());
@@ -75,11 +72,12 @@ public class StudentRepository
         } 
         catch (SQLException e) 
         {
-            System.err.println("Save student error: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Database error while saving student: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    //returns all students (including completed)
+    //returns all students
     public List<Student> findAll() 
     {
         List<Student> list = new ArrayList<>();
@@ -107,7 +105,8 @@ public class StudentRepository
         } 
         catch (SQLException e) 
         {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading students: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return list;
     }
@@ -143,12 +142,13 @@ public class StudentRepository
         } 
         catch (SQLException e) 
         {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error finding student: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return Optional.empty();
     }
 
-    //not implemented yet (future use)
+    //not implemented yet(future use) proffesional and dat xd
     public void savePlan(String id, DegreePlan plan) 
     {
         throw new UnsupportedOperationException("Not supported yet.");

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Fri Nov 07 22:06:06 NZDT 2025:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-019a-5d90-dbb8-00001f467b40 
-on database directory C:\.netbeans-21\.netbeans-21\derbyANAS with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
+Sun Nov 09 03:17:15 NZDT 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-019a-63d4-17db-00001f464410 
+on database directory C:\Users\RTX\Downloads\VirtualAcademicAdvisorFinal\VirtualAcademicAdvisor1\database\VirtualAdvisorDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
 Loaded from file:/C:/Users/RTX/.m2/repository/org/apache/derby/derby/10.16.1.1/derby-10.16.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=21.0.7+8-LTS-245

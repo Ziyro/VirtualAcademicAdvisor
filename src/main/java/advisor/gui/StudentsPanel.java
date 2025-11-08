@@ -38,7 +38,31 @@ public class StudentsPanel extends JPanel
         table.setRowHeight(36);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
         table.getTableHeader().setPreferredSize(new Dimension(0, 45));
+
+        //make table cells non-editable by user
+        table.setDefaultEditor(Object.class, null);
+
         add(new JScrollPane(table), BorderLayout.CENTER);
+
+        //tooltip only shows if text is truncated
+        table.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (row > -1 && col > -1) {
+                    Object value = table.getValueAt(row, col);
+                    if (value != null) {
+                        String text = value.toString();
+                        java.awt.FontMetrics fm = table.getFontMetrics(table.getFont());
+                        int textWidth = fm.stringWidth(text);
+                        int colWidth = table.getColumnModel().getColumn(col).getWidth();
+                        if (textWidth > colWidth - 10) table.setToolTipText(text);
+                        else table.setToolTipText(null);
+                    }
+                } else table.setToolTipText(null);
+            }
+        });
 
         //buttons
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
@@ -134,7 +158,7 @@ public class StudentsPanel extends JPanel
     private void styleActionButton(JButton b)
     {
         b.setFocusPainted(false);
-        b.setBackground(new Color(245, 247, 250)); // base tone
+        b.setBackground(new Color(245, 247, 250)); //base tone
         b.setForeground(new Color(40, 60, 90));
         b.setBorder(BorderFactory.createLineBorder(new Color(210, 210, 210)));
 
@@ -143,7 +167,7 @@ public class StudentsPanel extends JPanel
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e)
             {
-                b.setBackground(new Color(70, 130, 180)); // soft blue hover
+                b.setBackground(new Color(70, 130, 180)); //soft blue hover
                 b.setForeground(Color.WHITE);
                 b.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
@@ -151,7 +175,7 @@ public class StudentsPanel extends JPanel
             @Override
             public void mouseExited(java.awt.event.MouseEvent e)
             {
-                b.setBackground(new Color(245, 247, 250)); // reset
+                b.setBackground(new Color(245, 247, 250)); //reset
                 b.setForeground(new Color(40, 60, 90));
                 b.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }

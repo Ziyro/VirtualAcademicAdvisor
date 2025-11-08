@@ -19,7 +19,7 @@ public class Database
 {
     //update path if DB location differs
     private static final String DB_URL = 
-          "jdbc:derby:C:/.netbeans-21/.netbeans-21/derbyANAS;create=true";
+          "jdbc:derby:database/VirtualAdvisorDB;create=true";
 
     //returns a connection to the db
     public static Connection getConnection() throws SQLException 

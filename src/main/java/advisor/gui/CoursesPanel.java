@@ -19,7 +19,7 @@ public class CoursesPanel extends JPanel
     private JTable table;
     private DefaultTableModel model;
 
-    public CoursesPanel(CourseRepository repo) 
+    public CoursesPanel(CourseRepository repo)
     {
         this.repo = repo;
 
@@ -35,32 +35,56 @@ public class CoursesPanel extends JPanel
         //table setup with headers
         model = new DefaultTableModel(new Object[]{"CODE", "NAME", "POINTS", "PREREQUISITES"}, 0);
         table = new JTable(model);
-          table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         table.setRowHeight(36);
-         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
-         table.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
+        table.getTableHeader().setPreferredSize(new Dimension(0, 45));
+
+        //make table cells non-editable by user
+        table.setDefaultEditor(Object.class, null);
+
+        //tooltip only shows if text is truncated
+        table.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (row > -1 && col > -1) {
+                    Object value = table.getValueAt(row, col);
+                    if (value != null) {
+                        String text = value.toString();
+                        java.awt.FontMetrics fm = table.getFontMetrics(table.getFont());
+                        int textWidth = fm.stringWidth(text);
+                        int colWidth = table.getColumnModel().getColumn(col).getWidth();
+                        if (textWidth > colWidth - 10) table.setToolTipText(text);
+                        else table.setToolTipText(null);
+                    }
+                } else table.setToolTipText(null);
+            }
+        });
+
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         //refresh button
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
-         JButton refreshBtn = new JButton("Refresh");
+        JButton refreshBtn = new JButton("Refresh");
         refreshBtn.setPreferredSize(new Dimension(200, 50));
-         refreshBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
-         buttons.add(refreshBtn);
+        refreshBtn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        buttons.add(refreshBtn);
         add(buttons, BorderLayout.SOUTH);
 
         //refresh when button clicked
-         refreshBtn.addActionListener(e -> refreshTable());
+        refreshBtn.addActionListener(e -> refreshTable());
         refreshTable(); //refresh insta
     }
 
     private void refreshTable()
     {
-        try 
+        try
         {
             //load courses from repo
             List<Course> courses = repo.findAll();
-            model.setRowCount(0); // clear old rows
+            model.setRowCount(0); //clear old rows
             for (Course c : courses) {
                 String prereqs = c.getPrerequisites().isEmpty()
                         ? "-"

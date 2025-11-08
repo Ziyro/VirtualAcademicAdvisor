@@ -2,10 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-/*
- * Represents a student with ID, name, GPA, goal and completed courses
- */
-package advisor.model;
+
+// Represents a student with ID, name, GPA, goal and completed courses
+ package advisor.model;
 
 import java.util.ArrayList;
 import java.util.List;
